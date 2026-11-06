@@ -1,0 +1,596 @@
+version: 2
+
+models:
+  - name: stg_laps
+    description: "Staging table for laps data from OpenF1"
+    config:
+      tags: ['staging', 'laps']
+    columns:
+      - name: schema_version
+        description: "Schema version identifier"
+        data_type: int
+      - name: source_endpoint
+        description: "Source endpoint path"
+        data_type: string
+      - name: meeting_key
+        description: "Meeting key identifier"
+        data_type: int
+      - name: session_key
+        description: "Session key identifier"
+        data_type: int
+      - name: driver_number
+        description: "Driver number (nullable for race_control/weather)"
+        data_type: int
+        constraints:
+          nullable: true
+      - name: event_time
+        description: "Event timestamp"
+        data_type: timestamp
+      - name: ingest_time
+        description: "Data ingestion timestamp"
+        data_type: timestamp
+      - name: replay_run_id
+        description: "Replay run identifier"
+        data_type: string
+      - name: payload
+        description: "Payload data as struct/json"
+        data_type: struct
+      # Payload columns from laps payload
+      - name: lap_number
+        description: "Lap number"
+        data_type: int
+        constraints:
+          nullable: false
+      - name: lap_duration
+        description: "Lap duration"
+        data_type: decimal(10,6)
+        constraints:
+          nullable: false
+      - name: sector_1_duration
+        description: "Sector 1 duration"
+        data_type: decimal(10,6)
+        constraints:
+          nullable: true
+      - name: sector_2_duration
+        description: "Sector 2 duration"
+        data_type: decimal(10,6)
+        constraints:
+          nullable: true
+      - name: sector_3_duration
+        description: "Sector 3 duration"
+        data_type: decimal(10,6)
+        constraints:
+          nullable: true
+      - name: speed_trap
+        description: "Speed trap value"
+        data_type: decimal(10,6)
+        constraints:
+          nullable: true
+      - name: st_speed
+        description: "Speed value"
+        data_type: decimal(10,6)
+        constraints:
+          nullable: true
+      - name: date_start
+        description: "Date and start time"
+        data_type: timestamp
+        constraints:
+          nullable: true
+      - name: is_pit_out_lap
+        description: "Is pit out lap flag"
+        data_type: boolean
+        constraints:
+          nullable: true
+      - name: compound
+        description: "Tyre compound"
+        data_type: string
+        constraints:
+          nullable: true
+      - name: tyre_life
+        description: "Tyre life"
+        data_type: int
+        constraints:
+          nullable: true
+      - name: fresh_tyre
+        description: "Fresh tyre flag"
+        data_type: boolean
+        constraints:
+          nullable: true
+
+  - name: stg_position
+    description: "Staging table for position data from OpenF1"
+    config:
+      tags: ['staging', 'position']
+    columns:
+      - name: schema_version
+        description: "Schema version identifier"
+        data_type: int
+      - name: source_endpoint
+        description: "Source endpoint path"
+        data_type: string
+      - name: meeting_key
+        description: "Meeting key identifier"
+        data_type: int
+      - name: session_key
+        description: "Session key identifier"
+        data_type: int
+      - name: driver_number
+        description: "Driver number (nullable for race_control/weather)"
+        data_type: int
+        constraints:
+          nullable: true
+      - name: event_time
+        description: "Event timestamp"
+        data_type: timestamp
+      - name: ingest_time
+        description: "Data ingestion timestamp"
+        data_type: timestamp
+      - name: replay_run_id
+        description: "Replay run identifier"
+        data_type: string
+      - name: payload
+        description: "Payload data as struct/json"
+        data_type: struct
+      # Payload columns from position payload
+      - name: date
+        description: "Date"
+        data_type: timestamp
+        constraints:
+          nullable: false
+      - name: position
+        description: "Driver position"
+        data_type: int
+        constraints:
+          nullable: false
+
+  - name: stg_intervals
+    description: "Staging table for intervals data from OpenF1"
+    config:
+      tags: ['staging', 'intervals']
+    columns:
+      - name: schema_version
+        description: "Schema version identifier"
+        data_type: int
+      - name: source_endpoint
+        description: "Source endpoint path"
+        data_type: string
+      - name: meeting_key
+        description: "Meeting key identifier"
+        data_type: int
+      - name: session_key
+        description: "Session key identifier"
+        data_type: int
+      - name: driver_number
+        description: "Driver number (nullable for race_control/weather)"
+        data_type: int
+        constraints:
+          nullable: true
+      - name: event_time
+        description: "Event timestamp"
+        data_type: timestamp
+      - name: ingest_time
+        description: "Data ingestion timestamp"
+        data_type: timestamp
+      - name: replay_run_id
+        description: "Replay run identifier"
+        data_type: string
+      - name: payload
+        description: "Payload data as struct/json"
+        data_type: struct
+      # Payload columns from intervals payload
+      - name: date
+        description: "Date"
+        data_type: timestamp
+        constraints:
+          nullable: false
+      - name: gap_to_leader
+        description: "Gap to leader"
+        data_type: decimal(10,6)
+        constraints:
+          nullable: true
+      - name: interval
+        description: "Interval"
+        data_type: decimal(10,6)
+        constraints:
+          nullable: true
+
+  - name: stg_session_result
+    description: "Staging table for session_result data from OpenF1"
+    config:
+      tags: ['staging', 'session_result']
+    columns:
+      - name: schema_version
+        description: "Schema version identifier"
+        data_type: int
+      - name: source_endpoint
+        description: "Source endpoint path"
+        data_type: string
+      - name: meeting_key
+        description: "Meeting key identifier"
+        data_type: int
+      - name: session_key
+        description: "Session key identifier"
+        data_type: int
+      - name: driver_number
+        description: "Driver number (nullable for race_control/weather)"
+        data_type: int
+        constraints:
+          nullable: true
+      - name: event_time
+        description: "Event timestamp"
+        data_type: timestamp
+      - name: ingest_time
+        description: "Data ingestion timestamp"
+        data_type: timestamp
+      - name: replay_run_id
+        description: "Replay run identifier"
+        data_type: string
+      - name: payload
+        description: "Payload data as struct/json"
+        data_type: struct
+      # Payload columns from session_result payload
+      - name: position
+        description: "Driver position"
+        data_type: int
+        constraints:
+          nullable: false
+      - name: points
+        description: "Driver points"
+        data_type: int
+        constraints:
+          nullable: false
+      - name: status
+        description: "Driver status"
+        data_type: string
+        constraints:
+          nullable: false
+      - name: classification
+        description: "Driver classification"
+        data_type: string
+        constraints:
+          nullable: false
+      - name: grid_position
+        description: "Grid position"
+        data_type: int
+        constraints:
+          nullable: false
+      - name: num_laps
+        description: "Number of laps completed"
+        data_type: int
+        constraints:
+          nullable: false
+      - name: fastest_lap_rank
+        description: "Fastest lap rank"
+        data_type: int
+        constraints:
+          nullable: true
+      - name: fastest_lap_time
+        description: "Fastest lap time"
+        data_type: decimal(10,6)
+        constraints:
+          nullable: true
+
+  - name: stg_pit
+    description: "Staging table for pit data from OpenF1"
+    config:
+      tags: ['staging', 'pit']
+    columns:
+      - name: schema_version
+        description: "Schema version identifier"
+        data_type: int
+      - name: source_endpoint
+        description: "Source endpoint path"
+        data_type: string
+      - name: meeting_key
+        description: "Meeting key identifier"
+        data_type: int
+      - name: session_key
+        description: "Session key identifier"
+        data_type: int
+      - name: driver_number
+        description: "Driver number (nullable for race_control/weather)"
+        data_type: int
+        constraints:
+          nullable: true
+      - name: event_time
+        description: "Event timestamp"
+        data_type: timestamp
+      - name: ingest_time
+        description: "Data ingestion timestamp"
+        data_type: timestamp
+      - name: replay_run_id
+        description: "Replay run identifier"
+        data_type: string
+      - name: payload
+        description: "Payload data as struct/json"
+        data_type: struct
+      # Payload columns from pit payload
+      - name: lap_number
+        description: "Lap number"
+        data_type: int
+        constraints:
+          nullable: false
+      - name: pit_duration
+        description: "Pit duration"
+        data_type: decimal(10,6)
+        constraints:
+          nullable: false
+      - name: date
+        description: "Date"
+        data_type: timestamp
+        constraints:
+          nullable: false
+
+  - name: stg_stints
+    description: "Staging table for stints data from OpenF1"
+    config:
+      tags: ['staging', 'stints']
+    columns:
+      - name: schema_version
+        description: "Schema version identifier"
+        data_type: int
+      - name: source_endpoint
+        description: "Source endpoint path"
+        data_type: string
+      - name: meeting_key
+        description: "Meeting key identifier"
+        data_type: int
+      - name: session_key
+        description: "Session key identifier"
+        data_type: int
+      - name: driver_number
+        description: "Driver number (nullable for race_control/weather)"
+        data_type: int
+        constraints:
+          nullable: true
+      - name: event_time
+        description: "Event timestamp"
+        data_type: timestamp
+      - name: ingest_time
+        description: "Data ingestion timestamp"
+        data_type: timestamp
+      - name: replay_run_id
+        description: "Replay run identifier"
+        data_type: string
+      - name: payload
+        description: "Payload data as struct/json"
+        data_type: struct
+      # Payload columns from stints payload
+      - name: stint_number
+        description: "Stint number"
+        data_type: int
+        constraints:
+          nullable: false
+      - name: compound
+        description: "Tyre compound"
+        data_type: string
+        constraints:
+          nullable: false
+      - name: lap_start
+        description: "Lap start"
+        data_type: int
+        constraints:
+          nullable: false
+      - name: lap_end
+        description: "Lap end"
+        data_type: int
+        constraints:
+          nullable: false
+      - name: tyre_age_at_start
+        description: "Tyre age at start"
+        data_type: int
+        constraints:
+          nullable: false
+
+  - name: stg_race_control
+    description: "Staging table for race_control data from OpenF1"
+    config:
+      tags: ['staging', 'race_control']
+    columns:
+      - name: schema_version
+        description: "Schema version identifier"
+        data_type: int
+      - name: source_endpoint
+        description: "Source endpoint path"
+        data_type: string
+      - name: meeting_key
+        description: "Meeting key identifier"
+        data_type: int
+      - name: session_key
+        description: "Session key identifier"
+        data_type: int
+      - name: driver_number
+        description: "Driver number (nullable for race_control/weather)"
+        data_type: int
+        constraints:
+          nullable: true
+      - name: event_time
+        description: "Event timestamp"
+        data_type: timestamp
+      - name: ingest_time
+        description: "Data ingestion timestamp"
+        data_type: timestamp
+      - name: replay_run_id
+        description: "Replay run identifier"
+        data_type: string
+      - name: payload
+        description: "Payload data as struct/json"
+        data_type: struct
+      # Payload columns from race_control payload
+      - name: date
+        description: "Date"
+        data_type: timestamp
+        constraints:
+          nullable: false
+      - name: category
+        description: "Category"
+        data_type: string
+        constraints:
+          nullable: false
+      - name: flag
+        description: "Flag"
+        data_type: string
+        constraints:
+          nullable: false
+      - name: scope
+        description: "Scope"
+        data_type: string
+        constraints:
+          nullable: false
+      - name: sector
+        description: "Sector"
+        data_type: string
+        constraints:
+          nullable: true
+      - name: message
+        description: "Message"
+        data_type: string
+        constraints:
+          nullable: false
+
+  - name: stg_weather
+    description: "Staging table for weather data from OpenF1"
+    config:
+      tags: ['staging', 'weather']
+    columns:
+      - name: schema_version
+        description: "Schema version identifier"
+        data_type: int
+      - name: source_endpoint
+        description: "Source endpoint path"
+        data_type: string
+      - name: meeting_key
+        description: "Meeting key identifier"
+        data_type: int
+      - name: session_key
+        description: "Session key identifier"
+        data_type: int
+      - name: driver_number
+        description: "Driver number (nullable for race_control/weather)"
+        data_type: int
+        constraints:
+          nullable: true
+      - name: event_time
+        description: "Event timestamp"
+        data_type: timestamp
+      - name: ingest_time
+        description: "Data ingestion timestamp"
+        data_type: timestamp
+      - name: replay_run_id
+        description: "Replay run identifier"
+        data_type: string
+      - name: payload
+        description: "Payload data as struct/json"
+        data_type: struct
+      # Payload columns from weather payload
+      - name: date
+        description: "Date"
+        data_type: timestamp
+        constraints:
+          nullable: false
+      - name: air_temp
+        description: "Air temperature"
+        data_type: decimal(10,6)
+        constraints:
+          nullable: true
+      - name: track_temp
+        description: "Track temperature"
+        data_type: decimal(10,6)
+        constraints:
+          nullable: true
+      - name: humidity
+        description: "Humidity"
+        data_type: decimal(10,6)
+        constraints:
+          nullable: true
+      - name: pressure
+        description: "Pressure"
+        data_type: decimal(10,6)
+        constraints:
+          nullable: true
+      - name: wind_speed
+        description: "Wind speed"
+        data_type: decimal(10,6)
+        constraints:
+          nullable: true
+      - name: wind_direction
+        description: "Wind direction"
+        data_type: decimal(10,6)
+        constraints:
+          nullable: true
+      - name: rainfall
+        description: "Rainfall"
+        data_type: decimal(10,6)
+        constraints:
+          nullable: true
+
+  - name: stg_drivers
+    description: "Staging table for drivers data from OpenF1"
+    config:
+      tags: ['staging', 'drivers']
+    columns:
+      - name: schema_version
+        description: "Schema version identifier"
+        data_type: int
+      - name: source_endpoint
+        description: "Source endpoint path"
+        data_type: string
+      - name: meeting_key
+        description: "Meeting key identifier"
+        data_type: int
+      - name: session_key
+        description: "Session key identifier"
+        data_type: int
+      - name: driver_number
+        description: "Driver number (nullable for race_control/weather)"
+        data_type: int
+        constraints:
+          nullable: true
+      - name: event_time
+        description: "Event timestamp"
+        data_type: timestamp
+      - name: ingest_time
+        description: "Data ingestion timestamp"
+        data_type: timestamp
+      - name: replay_run_id
+        description: "Replay run identifier"
+        data_type: string
+      - name: payload
+        description: "Payload data as struct/json"
+        data_type: struct
+      # Payload columns from drivers payload
+      - name: broadcast_name
+        description: "Broadcast name"
+        data_type: string
+        constraints:
+          nullable: false
+      - name: full_name
+        description: "Full name"
+        data_type: string
+        constraints:
+          nullable: false
+      - name: name_acronym
+        description: "Name acronym"
+        data_type: string
+        constraints:
+          nullable: false
+      - name: team_name
+        description: "Team name"
+        data_type: string
+        constraints:
+          nullable: false
+      - name: team_colour
+        description: "Team colour"
+        data_type: string
+        constraints:
+          nullable: false
+      - name: headshot_url
+        description: "Headshot URL"
+        data_type: string
+        constraints:
+          nullable: true
+      - name: country_code
+        description: "Country code"
+        data_type: string
+        constraints:
+          nullable: false

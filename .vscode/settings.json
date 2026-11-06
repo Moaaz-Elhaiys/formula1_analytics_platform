@@ -1,0 +1,5 @@
+{
+    "python-envs.defaultEnvManager": "ms-python.python:system",
+    "dbt.dbtMajorVersion": "v1",
+    "dbt.dbtPythonPathOverride": "/Users/elhaiys/Desktop/Desktop/vs projects/formula1_analytics_platform/.venv/bin/python3"
+}

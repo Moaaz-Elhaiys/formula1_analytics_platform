@@ -369,35 +369,19 @@ def build_envelope(
 # ---------------------------------------------------------------------------
 
 
-def create_producer() -> Producer:
-    """Create and configure a Confluent Cloud producer from environment variables."""
-    required_env = [
-        "CONFLUENT_BOOTSTRAP_SERVERS",
-        "CONFLUENT_API_KEY",
-        "CONFLUENT_API_SECRET",
-    ]
-    if missing := [v for v in required_env if not os.getenv(v)]:
-        raise EnvironmentError(
-            f"Missing required environment variables: {', '.join(missing)}. "
-            "Set them before running the replayer."
-        )
-
+def create_producer(bootstrap_servers: str) -> Producer:
+    """Create and configure a local Kafka producer from bootstrap servers."""
     conf = {
-        "bootstrap.servers": os.environ["CONFLUENT_BOOTSTRAP_SERVERS"],
-        "security.protocol": "SASL_SSL",
-        "sasl.mechanisms": "PLAIN",
-        "sasl.username": os.environ["CONFLUENT_API_KEY"],
-        "sasl.password": os.environ["CONFLUENT_API_SECRET"],
+        "bootstrap.servers": bootstrap_servers,
+        # Use plaintext (no SASL/SSL for local Kafka)
+        "security.protocol": "PLAINTEXT",
         # Reliability settings
         "acks": "all",
         "retries": 5,
-        "retry.backoff.ms": 500,
-        "delivery.timeout.ms": 120000,
-        # Performance — FIX 1: sized for instant replay bursts
         "linger.ms": 5,
-        "batch.size": 32768,                        # was 16384
-        "queue.buffering.max.messages": 500000,      # was default 100000
-        "queue.buffering.max.kbytes": 2097152,       # 2 GB (was default 1048589)
+        "batch.size": 32768,
+        "queue.buffering.max.messages": 500000,
+        "queue.buffering.max.kbytes": 2097152,
         "compression.type": "snappy",
     }
 
@@ -440,6 +424,7 @@ def replay(
     replay_run_id: str,
     speed: float,
     dry_run: bool = False,
+    bootstrap_servers: str = "localhost:9092",
 ) -> dict:    # sourcery skip: extract-method, for-index-underscore, low-code-quality
     """
     Execute the replay. Returns a summary dict.
@@ -457,6 +442,7 @@ def replay(
     log.info("  Session: %d | Meeting: %d", session_key, meeting_key)
     log.info("  Replay run ID: %s", replay_run_id)
     log.info("  Speed: %s", f"{speed}x" if speed > 0 else "instant")
+    log.info("  Bootstrap servers: %s", bootstrap_servers)
     log.info("  Messages to publish: %d", len(timeline))
     log.info("=" * 60)
 
@@ -472,8 +458,8 @@ def replay(
     delivery_callbacks: list = []
 
     if not dry_run:
-        producer = create_producer()
-        log.info("Kafka producer connected to Confluent Cloud")
+        producer = create_producer(bootstrap_servers)
+        log.info("Kafka producer connected to local Kafka")
 
         # Warm up connection — force metadata fetch for all topics
         log.info("Warming up Kafka connection...")
@@ -637,7 +623,7 @@ def replay(
 
 def main() -> None:  # sourcery skip: for-index-underscore
     parser = argparse.ArgumentParser(
-        description="Replay cached OpenF1 session data to Confluent Cloud Kafka."
+        description="Replay cached OpenF1 session data to local Kafka."
     )
     parser.add_argument(
         "--session-key",
@@ -668,6 +654,12 @@ def main() -> None:  # sourcery skip: for-index-underscore
         action="store_true",
         help="Log messages without publishing to Kafka",
     )
+    parser.add_argument(
+        "--bootstrap-servers",
+        type=str,
+        default="localhost:9092",
+        help="Kafka bootstrap servers (default: localhost:9092)",
+    )
     args = parser.parse_args()
 
     session_dir = args.cache_dir / str(args.session_key)
@@ -691,12 +683,16 @@ def main() -> None:  # sourcery skip: for-index-underscore
         log.error("Speed must be >= 0 (got %s)", args.speed)
         sys.exit(1)
 
+    # Determine bootstrap servers: env first, then CLI, else default
+    bootstrap_servers = os.getenv("CONFLUENT_BOOTSTRAP_SERVERS", args.bootstrap_servers)
+
     replay(
         session_dir=session_dir,
         session_key=args.session_key,
         replay_run_id=replay_run_id,
         speed=args.speed,
         dry_run=args.dry_run,
+        bootstrap_servers=bootstrap_servers,
     )
 
 
